@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-center">Register</h2>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+
+        <button type="submit" 
+                class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300">
+            Register
+        </button>
+    </form>
+    </form>
+    <p class="text-center mt-4">
+        Already have an account? <a href="{% url 'login' %}" class="text-blue-600">Login</a>
+    </p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const password1 = document.getElementById('id_password1');
+        const password2 = document.getElementById('id_password2');
+        
+        password2.addEventListener('input', () => {
+            if (password1.value !== password2.value) {
+                password2.setCustomValidity('Passwords do not match');
+            } else {
+                password2.setCustomValidity('');
+            }
+        });
+    });
+</script>
+{% endblock %}

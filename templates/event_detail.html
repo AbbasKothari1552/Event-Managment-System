@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mx-auto p-6">
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">{{ event.name }}</h2>
+            <div>
+                <a href="{% url 'edit_event' event.id %}" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Edit Event</a>
+                <a href="{% url 'dashboard' %}" class="bg-gray-500 text-white px-4 py-2 rounded">Back to Events</a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+                <p><strong>Date:</strong> {{ event.date }}</p>
+                <p><strong>Time:</strong> {{ event.time }}</p>
+                <p><strong>Venue:</strong> {{ event.venue }}</p>
+            </div>
+            <div>
+                <p><strong>Description:</strong> {{ event.description }}</p>
+            </div>
+        </div>
+
+        <!-- <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-4">Add Attendee</h3>
+            <form method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {% csrf_token %}
+                {{ form.person }}
+                {{ form.family_count }}
+                {{ form.description }}
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Add Attendee</button>
+            </form>
+        </div> -->
+        <div class="flex justify-between items-center">
+            <a href="{% url 'event_attendance' event.id %}" 
+               class="bg-blue-500 text-white px-3 py-1 rounded z-10"
+               onclick="event.stopPropagation()">
+                Add Attendees
+            </a>
+        </div>
+
+        <div>
+            <h3 class="text-xl font-semibold mb-4">Attendees ({{ event_attendances.count }})</h3>
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border p-2">Name</th>
+                        <th class="border p-2">Family Count</th>
+                        <th class="border p-2">Description</th>
+                        <th class="border p-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attendance in event_attendances %}
+                    <tr>
+                        <td class="border p-2">{{ attendance.person.name }}</td>
+                        <td class="border p-2">{{ attendance.family_count }}</td>
+                        <td class="border p-2">{{ attendance.description }}</td>
+                        <td class="border p-2 text-center">
+                            <a href="{% url 'edit_attendee' attendance.id %}" class="text-blue-500 mr-2">Edit</a>
+                            <a href="{% url 'remove_attendee' attendance.id %}" class="text-red-500" onclick="return confirm('Are you sure?')">Remove</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center p-4">No attendees added yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

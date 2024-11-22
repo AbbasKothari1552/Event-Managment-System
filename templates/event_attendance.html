@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mx-auto p-6">
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-2xl font-bold mb-4">Event: {{ event.name }}</h2>
+        
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+                <p><strong>Date:</strong> {{ event.date }}</p>
+                <p><strong>Time:</strong> {{ event.time }}</p>
+                <p><strong>Venue:</strong> {{ event.venue }}</p>
+            </div>
+            <div>
+                <p><strong>Description:</strong> {{ event.description }}</p>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <input type="text" id="person-search" placeholder="Search People" 
+                   class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div id="search-results" class="mt-2 border rounded"></div>
+        </div>
+
+        <form method="post" id="attendance-form">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    {{ form.person.label_tag }}
+                    {{ form.person }}
+                </div>
+                <div>
+                    {{ form.family_count.label_tag }}
+                    {{ form.family_count }}
+                </div>
+                <div class="md:col-span-2">
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                </div>
+            </div>
+            <button type="submit" class="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
+                Add Attendee
+            </button>
+        </form>
+
+        <!-- <div class="mt-6">
+            <h3 class="text-xl font-semibold mb-4">Current Attendees</h3>
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border p-2">Name</th>
+                        <th class="border p-2">Family Count</th>
+                        <th class="border p-2">Description</th>
+                        <th class="border p-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attendance in event_attendances %}
+                    <tr>
+                        <td class="border p-2">{{ attendance.person.name }}</td>
+                        <td class="border p-2">{{ attendance.family_count }}</td>
+                        <td class="border p-2">{{ attendance.description }}</td>
+                        <td class="border p-2 text-center">
+                            <a href="#" class="text-red-500">Remove</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center p-4">No attendees yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div> -->
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('person-search');
+    const searchResults = document.getElementById('search-results');
+    const personSelect = document.getElementById('id_person');
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value;
+        if (query.length > 2) {
+            fetch(`/search-people/?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    searchResults.innerHTML = '';
+                    data.forEach(person => {
+                        const div = document.createElement('div');
+                        div.textContent = person.name;
+                        div.classList.add('p-2', 'hover:bg-gray-100', 'cursor-pointer');
+                        div.addEventListener('click', function() {
+                            searchInput.value = person.name;
+                            personSelect.value = person.id;
+                            searchResults.innerHTML = '';
+                        });
+                        searchResults.appendChild(div);
+                    });
+                });
+        } else {
+            searchResults.innerHTML = '';
+        }
+    });
+});
+</script>
+{% endblock %}
