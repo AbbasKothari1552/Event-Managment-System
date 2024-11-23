@@ -1,55 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout,authenticate
 from django.contrib import messages
-from .models import Event, Person, EventAttendance
-from .forms import RegistrationForm,EventForm, PersonForm, EventAttendanceForm
+from django.db import IntegrityError
+from .models import Event, EventAttendance, Person
+from .forms import EventForm
+from attendees.forms import EventAttendanceForm
+from django.utils.timezone import now
 
-
-
-# Base Page
-def base(request):
-    return render(request, 'base.html')  
-
-
-# User Registration
-def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, "Welcome, user")
-            return redirect('dashboard')
-        else:
-            messages.error(request, "Soemthing went wrong, olease try again")
-    else:
-        form = RegistrationForm()
-    return render(request, 'register.html', {'form': form})
-
-# User login
-def user_login(request):
-    if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
-        user = authenticate(request, username=email, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
-    return render(request, 'login.html')
-
-# User logout
-@login_required
-def user_logout(request):
-    logout(request)
-    return redirect('base')
-
-
-# Dashboard
-@login_required
-def dashboard(request):
-    events = Event.objects.filter(created_by=request.user)
-    return render(request, 'dashboard.html', {'events': events})
 
 
 # Create new event
@@ -66,37 +23,6 @@ def create_event(request):
         form = EventForm()
     return render(request, 'create_event.html', {'form': form})
 
-
-# Add person
-@login_required
-def add_person(request):
-    if request.method == 'POST':
-        form = PersonForm(request.POST)
-        if form.is_valid():
-            person = form.save(commit=False)
-            person.created_by = request.user
-            person.save()
-            return redirect('dashboard')
-    else:
-        form = PersonForm()
-    return render(request, 'add_person.html', {'form': form})
-
-
-# add attendies/invitees to event
-@login_required
-def event_attendance(request, event_id):
-    event = get_object_or_404(Event, id=event_id, created_by=request.user)
-    if request.method == 'POST':
-        person_id = request.POST['person']
-        family_count = int(request.POST['family_count'])
-        description = request.POST.get('description', '')
-        person = get_object_or_404(Person, id=person_id, created_by=request.user)
-        EventAttendance.objects.create(event=event, person=person, family_count=family_count, description=description)
-        return redirect('dashboard')
-    else:
-        people = Person.objects.filter(created_by=request.user)
-        form = EventAttendanceForm(user=request.user)
-    return render(request, 'event_attendance.html', {'form': form, 'event': event, 'people': people})
 
 @login_required
 def event_detail(request, event_id):
@@ -122,8 +48,67 @@ def event_detail(request, event_id):
 
 
 @login_required
-def remove_attendee(request, attendance_id):
-    attendance = get_object_or_404(EventAttendance, id=attendance_id)
-    event_id = attendance.event.id
-    attendance.delete()
-    return redirect('event_detail', event_id=event_id)
+def invitation(request):
+    return render(request, 'invitation.html')
+
+@login_required
+def send_invitations(request, attendance_id=None, event_id=None):
+    """
+    Handles sending invitations for single or bulk requests and updates the model fields.
+    :param request: HttpRequest object
+    :param attendance_id: ID of EventAttendance for single invite
+    :param event_id: ID of Event for bulk invites
+    :return: JsonResponse or redirect
+    """
+    if attendance_id:
+        # Single invite
+        attendance = get_object_or_404(EventAttendance, id=attendance_id)
+        if attendance.invite_status == 'PENDING':
+            attendance.invite_status = 'SENT'
+            attendance.invite_sent_at = now()
+            attendance.save()
+            message = f"Invitation sent to {attendance.person.name} for event {attendance.event.name}."
+            
+        else:
+            message = f"Invitation for {attendance.person.name} was already sent."
+        return redirect('event_detail', event_id=attendance.event.id)
+
+    elif event_id:
+        # Bulk invites
+        event = get_object_or_404(Event, id=event_id)
+        pending_attendees = EventAttendance.objects.filter(event=event, invite_status='PENDING')
+        if not pending_attendees.exists():
+            return redirect('event_detail', event_id=event.id)
+        # Update all pending invitees
+        for attendance in pending_attendees:
+            attendance.invite_status = 'SENT'
+            attendance.invite_sent_at = now()
+            attendance.save()
+
+        return redirect('event_detail', event_id=event.id)
+
+    else:
+        return redirect('invitation')
+    
+
+@login_required
+def view_invitations(request):
+    """
+    Displays all invitations for the logged-in user based on their email.
+    """
+    # Get the logged-in user's email
+    user_email = request.user.email
+    
+    # Fetch EventAttendance records where the person's email matches the logged-in user's email
+    invitations = EventAttendance.objects.filter(person__email=user_email).exclude(invite_status='PENDING')
+    
+    return render(request, 'invitation.html', {'invitations': invitations})
+
+@login_required
+def accept_invitation(request, attendance_id=None, event_id=None):
+    pass
+
+@login_required
+def decline_invitation(request, attendance_id=None, event_id=None):
+    pass
+

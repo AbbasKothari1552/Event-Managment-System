@@ -11,6 +11,9 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'email'  # Use email for authentication
     REQUIRED_FIELDS = ['phone_no']  # No additional fields required
 
+    class Meta:
+        db_table = 'events_customuser'
+
 
 # Event Model
 class Event(models.Model):
@@ -38,7 +41,7 @@ class Person(models.Model):
             )
         ]
     )
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField()
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='people')
 
     class Meta:
@@ -52,10 +55,26 @@ class Person(models.Model):
 
 # Invitees to event Model
 class EventAttendance(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('ACCEPTED', 'Accepted'),
+        ('DECLINED', 'Declined'),
+        ('SENT', 'Sent'),
+    ]
+
+    choice = [
+        ('1','1'),
+        ('2','2'),
+        ('All','All'),
+    ]
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='attendances')
     person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='attendances')
+    invitees_count = models.CharField(max_length=3, choices=choice, default='1')
     family_count = models.PositiveIntegerField(default=1)
     description = models.TextField(blank=True, null=True) 
+    invite_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    invite_sent_at = models.DateTimeField(blank=True, null=True)  # Tracks when the invitation was sent
+    response_at = models.DateTimeField(blank=True, null=True)    # Tracks when the response was received
 
     class Meta:
         constraints = [
@@ -64,4 +83,3 @@ class EventAttendance(models.Model):
 
     def __str__(self):
         return f"{self.person.name} attending {self.event.name}"
-

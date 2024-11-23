@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Invitations</title>
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Alpine.js -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="container mx-auto px-4 py-6">
+    <!-- Page Title -->
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">My Invitations</h1>
+
+    <!-- Filter and Sort Options -->
+    <div class="flex flex-wrap justify-between gap-4 mb-6">
+      <div>
+        <label for="filterStatus" class="block text-gray-700 font-medium mb-1">Filter by Status</label>
+        <select id="filterStatus" class="border border-gray-300 rounded-md shadow-sm px-3 py-2 w-full">
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="accepted">Accepted</option>
+          <option value="declined">Declined</option>
+        </select>
+      </div>
+      <div>
+        <label for="filterTime" class="block text-gray-700 font-medium mb-1">Filter by Time</label>
+        <select id="filterTime" class="border border-gray-300 rounded-md shadow-sm px-3 py-2 w-full">
+          <option value="upcoming">Upcoming</option>
+          <option value="past">Past Events</option>
+        </select>
+      </div>
+      <div>
+        <label for="sortOptions" class="block text-gray-700 font-medium mb-1">Sort by</label>
+        <select id="sortOptions" class="border border-gray-300 rounded-md shadow-sm px-3 py-2 w-full">
+          <option value="dateAsc">Event Date (Ascending)</option>
+          <option value="dateDesc">Event Date (Descending)</option>
+          <option value="nameAsc">Event Name (A-Z)</option>
+          <option value="nameDesc">Event Name (Z-A)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Invitation Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Example Invitation Card -->
+      <div class="bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-xl font-bold text-gray-800 mb-1">Majlis</h3>
+        <p class="text-sm text-gray-500 mb-2"><i class="bi bi-calendar3"></i> Dec 3, 2024, 7:30 PM</p>
+        <p class="text-gray-700 mb-3">All are required to present in the majlis. Niyaz jaman will be served after.</p>
+        <p class="text-sm text-gray-600 mb-4"><i class="bi bi-person-fill"></i> Host: Ali Akbar</p>
+        <p class="text-yellow-600 font-medium mb-4">Status: Pending</p>
+        <div class="flex justify-between">
+          <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+            <i class="fas fa-check"></i> Accept
+          </button>
+          <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
+            <i class="fas fa-times"></i> Decline
+          </button>
+        </div>
+      </div>
+
+      <!-- Repeat for Other Invitations -->
+      <div class="bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-xl font-bold text-gray-800 mb-1">Shitabi</h3>
+        <p class="text-sm text-gray-500 mb-2"><i class="bi bi-calendar3"></i> Dec 2, 2024, 11:00 AM</p>
+        <p class="text-gray-700 mb-3">Shitabi ma sagla haazir rehna. Please be on time.</p>
+        <p class="text-sm text-gray-600 mb-4"><i class="bi bi-person-fill"></i> Host: Fatima Zahra</p>
+        <p class="text-green-600 font-medium mb-4">Status: Accepted</p>
+        <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+          <i class="fas fa-bell"></i> Set Reminder
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

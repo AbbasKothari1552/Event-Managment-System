@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'sidebar.html' %}
 {% block content %}
 <div class="container mx-auto p-6">
     <div class="bg-white shadow-md rounded-lg p-6">
@@ -21,23 +21,22 @@
             </div>
         </div>
 
-        <!-- <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-4">Add Attendee</h3>
-            <form method="post" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {% csrf_token %}
-                {{ form.person }}
-                {{ form.family_count }}
-                {{ form.description }}
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Add Attendee</button>
-            </form>
-        </div> -->
+        <!-- Buttons for sending invitations & add attendees -->
         <div class="flex justify-between items-center">
-            <a href="{% url 'event_attendance' event.id %}" 
+            <a href="{% url 'send_all_invitation' event.id %}" 
+               class="bg-blue-500 text-white px-3 py-1 rounded z-10"
+               onclick="event.stopPropagation()">
+                Send All invitations
+            </a>
+            <a href="{% url 'add_attendees' event.id %}" 
                class="bg-blue-500 text-white px-3 py-1 rounded z-10"
                onclick="event.stopPropagation()">
                 Add Attendees
             </a>
         </div>
+        <!-- <div class="flex justify-between items-center">
+            
+        </div> -->
 
         <div>
             <h3 class="text-xl font-semibold mb-4">Attendees ({{ event_attendances.count }})</h3>
@@ -45,20 +44,51 @@
                 <thead>
                     <tr class="bg-gray-100">
                         <th class="border p-2">Name</th>
+                        <th class="border p-2">Invitees Count</th>
                         <th class="border p-2">Family Count</th>
                         <th class="border p-2">Description</th>
+                        <th class="border p-2">STATUS</th>
+                        <th class="border p-2">INVITATION</th>
                         <th class="border p-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for attendance in event_attendances %}
                     <tr>
-                        <td class="border p-2">{{ attendance.person.name }}</td>
-                        <td class="border p-2">{{ attendance.family_count }}</td>
+                        <td class="text-center border p-2">{{ attendance.person.name }}</td>
+                        <td class="text-center border p-2">{{ attendance.invitees_count }}</td>
+                        <td class="text-center border p-2">{{ attendance.family_count }}</td>
                         <td class="border p-2">{{ attendance.description }}</td>
+                        <td class="text-center border p-2">{{ attendance.invite_status }}</td>
+                        <td class="align-items-center border p-2">
+                            {% if attendance.invite_status == 'PENDING' %}
+                                <div class="align-items-center flex justify-between items-center">
+                                    <a href="{% url 'send_invitation' attendance.id event.id %}" 
+                                    class="bg-blue-500 text-white px-3 py-1 rounded z-10"
+                                    onclick="event.stopPropagation()">
+                                        Send
+                                    </a>
+                                </div></td>
+                            {% else %}
+                                <div class="align-items-center flex justify-between items-center">
+                                    <a href="{% url 'add_attendees' event.id %}" 
+                                    class="bg-red-500 text-white px-3 py-1 rounded z-10"
+                                    onclick="event.stopPropagation()">
+                                        Withdraw
+                                    </a>
+                                </div></td>
+                            {% endif %}
                         <td class="border p-2 text-center">
-                            <a href="{% url 'edit_attendee' attendance.id %}" class="text-blue-500 mr-2">Edit</a>
-                            <a href="{% url 'remove_attendee' attendance.id %}" class="text-red-500" onclick="return confirm('Are you sure?')">Remove</a>
+                            <!-- <a href="{% url 'edit_attendee' attendance.id %}" class="text-blue-500 mr-2">Edit</a>
+                            <a href="{% url 'remove_attendee' attendance.id %}" class="text-red-500" onclick="return confirm('Are you sure?')">Remove</a> -->
+                            <a href="{% url 'edit_attendee' attendance.id %}" class="text-primary mr-2" title="Edit">
+                                <i class="bi bi-pencil-fill"></i> <!-- Edit Icon -->
+                            </a>
+                            <a href="{% url 'remove_attendee' attendance.id %}" class="text-danger" onclick="return confirm('Are you sure?')" title="Remove">
+                                <i class="bi bi-trash-fill"></i> <!-- Remove Icon -->
+                            </a>
+
+                            
                         </td>
                     </tr>
                     {% empty %}

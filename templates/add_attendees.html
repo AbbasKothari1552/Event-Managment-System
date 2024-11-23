@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'sidebar.html' %}
 {% block content %}
 <div class="container mx-auto p-6">
     <div class="bg-white shadow-md rounded-lg p-6">
@@ -29,6 +29,10 @@
                     {{ form.person }}
                 </div>
                 <div>
+                    {{ form.invitees_count.label_tag }}
+                    {{ form.invitees_count }}
+                </div>
+                <div>
                     {{ form.family_count.label_tag }}
                     {{ form.family_count }}
                 </div>
@@ -41,36 +45,6 @@
                 Add Attendee
             </button>
         </form>
-
-        <!-- <div class="mt-6">
-            <h3 class="text-xl font-semibold mb-4">Current Attendees</h3>
-            <table class="w-full border-collapse">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="border p-2">Name</th>
-                        <th class="border p-2">Family Count</th>
-                        <th class="border p-2">Description</th>
-                        <th class="border p-2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for attendance in event_attendances %}
-                    <tr>
-                        <td class="border p-2">{{ attendance.person.name }}</td>
-                        <td class="border p-2">{{ attendance.family_count }}</td>
-                        <td class="border p-2">{{ attendance.description }}</td>
-                        <td class="border p-2 text-center">
-                            <a href="#" class="text-red-500">Remove</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center p-4">No attendees yet</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div> -->
     </div>
 </div>
 

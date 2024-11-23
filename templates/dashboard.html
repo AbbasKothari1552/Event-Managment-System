@@ -1,91 +1,61 @@
-{% extends "base.html" %}
-
+{% extends "sidebar.html" %}
 {% block content %}
-<div class="container mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">My Dashboard</h1>
-        <div>
-            <a href="{% url 'create_event' %}" 
-               class="bg-green-500 text-white px-4 py-2 rounded mr-2">
-                Create Event
-            </a>
-            <a href="{% url 'add_person' %}" 
-               class="bg-blue-500 text-white px-4 py-2 rounded">
-                Add Person
-            </a>
-        </div>
-    </div>
 
-    {% if events %}
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {% for event in events %}
-            <div class="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow duration-300" 
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container mx-auto px-4 py-6">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn mb-4">
+            <i class="fas fa-bars text-gray-700 text-2xl"></i>
+        </button>
+
+        <!-- Top Bar -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 topbar-actions">
+            <h1 class="text-3xl font-bold mb-4 md:mb-0">My Dashboard</h1>
+            <div class="action-buttons">
+                <a href="{% url 'create_event' %}" class="inline-block bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition-colors duration-200">
+                    Create Event
+                </a>
+                <a href="{% url 'add_person' %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors duration-200">
+                    Add Person
+                </a>
+            </div>
+        </div>
+
+        {% if events %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for event in events %}
+            <div class="bg-white rounded-lg shadow-md p-6 flex flex-col justify-between cursor-pointer hover:shadow-lg transition-shadow duration-300" 
                  onclick="window.location.href='{% url 'event_detail' event.id %}'">
-                <!-- <h2 class="text-xl font-bold mb-2">{{ event.name }}</h2>
-                <p class="text-gray-600 mb-2">
-                    {{ event.date }} at {{ event.time }}
-                </p>
-                <p class="mb-4">{{ event.description }}</p>
+                <div>
+                    <h2 class="text-xl font-bold mb-2">{{ event.name }}</h2>
+                    <p class="text-gray-600">{{ event.date }} at {{ event.time }}</p>
+                    {% if event.description %}
+                    <p class="text-gray-700 mt-2">{{ event.description }}</p>
+                    {% endif %}
+                </div>
                 <div class="flex justify-between items-center mt-4">
-                    <a href="{% url 'event_attendance' event.id %}" 
-                       class="bg-blue-500 text-white px-3 py-1 rounded z-10"
+                    <a href="{% url 'add_attendees' event.id %}" 
+                       class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors duration-200"
                        onclick="event.stopPropagation()">
                         Add Attendees
                     </a>
-                    <span class="text-gray-500">
-                        {{ event.attendances.count }} Attendees
-                    </span>
-                </div> -->
-                <!-- Event Content -->
-                <div>
-                    <h2 class="text-xl font-bold mb-2">{{ event.name }}</h2>
-                    <p class="text-gray-600 mb-2">
-                        {{ event.date }} at {{ event.time }}
-                    </p>
-                    <p class="mb-4">{{ event.description }}</p>
-                </div>
-                
-                <!-- Footer with Add Attendees and Count -->
-                <div class="flex justify-between items-center mt-4">
-                    <a href="{% url 'event_attendance' event.id %}" 
-                    class="bg-blue-500 text-white px-3 py-1 rounded"
-                    onclick="event.stopPropagation()">
-                        Add Attendees
-                    </a>
-                    <span class="text-gray-500">
-                        {{ event.attendances.count }} Attendees
-                    </span>
+                    <span class="text-gray-500">{{ event.attendances.count }} Attendees</span>
                 </div>
             </div>
-        {% endfor %}
-    </div>
-    {% else %}
+            {% endfor %}
+        </div>
+        
+        {% else %}
         <div class="text-center bg-white p-8 rounded-lg shadow-md">
-            <p class="text-xl mb-4">You haven't created any events yet.</p>
+            <p class="mb-4">You haven't created any events yet.</p>
             <a href="{% url 'create_event' %}" 
-               class="bg-blue-600 text-white px-4 py-2 rounded">
+               class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors duration-200">
                 Create Your First Event
             </a>
         </div>
-    {% endif %}
-</div>
+        {% endif %}
+    </div>
+</main>
 
-<style>
-    .hover\:shadow-lg:hover {
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const eventCards = document.querySelectorAll('[onclick]');
-        eventCards.forEach(card => {
-            card.addEventListener('click', function(event) {
-                if (!event.target.closest('a')) {
-                    window.location.href = this.getAttribute('onclick').match(/'([^']*)'/)[1];
-                }
-            });
-        });
-    });
-</script>
 {% endblock %}
