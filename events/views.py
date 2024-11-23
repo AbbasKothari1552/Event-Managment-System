@@ -94,9 +94,7 @@ def event_attendance(request, event_id):
         EventAttendance.objects.create(event=event, person=person, family_count=family_count, description=description)
         return redirect('dashboard')
     else:
-        print("Current user:", request.user)
         people = Person.objects.filter(created_by=request.user)
-        print(people)
         form = EventAttendanceForm(user=request.user)
     return render(request, 'event_attendance.html', {'form': form, 'event': event, 'people': people})
 
